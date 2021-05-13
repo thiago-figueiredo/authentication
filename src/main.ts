@@ -9,7 +9,7 @@ const port = 3000;
 app.get("/authenticate", (request, response) => {
   const { email } = request.query;
 
-  const token = makeAccessToken({ email: request.query.email });
+  const token = makeAccessToken({ email });
 
   response.send(token);
 });
