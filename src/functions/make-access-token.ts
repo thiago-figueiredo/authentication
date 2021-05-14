@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-import { users } from "../data/users.js";
+import { contacts } from "../data/contacts.js";
 
 const options = {
   algorithm: "RS512",
@@ -13,33 +13,33 @@ const secretOrPrivateKey = process.env.PRIVATE_OR_SECRET_KEY;
 export const makeAccessToken = ({ email }) => {
   const payload = { email };
 
-  const userData = getUserData({ email });
+  const contactData = getContactData({ email });
 
-  if (userData === undefined) {
+  if (contactData === undefined) {
     throw new Error("User not found.");
   }
 
-  const { claims, namespace } = getHasuraClaims({ userData });
+  const { claims, namespace } = getHasuraClaims({ contactData });
 
   payload[namespace] = claims;
 
   return jwt.sign(payload, secretOrPrivateKey, options);
 };
 
-const getHasuraClaims = ({ userData }) => {
+const getHasuraClaims = ({ contactData }) => {
   return {
     claims: {
       "x-hasura-allowed-roles": ["admin"],
+      "x-hasura-contact-id": contactData.id,
       "x-hasura-default-role": "admin",
       "x-hasura-role": "admin",
-      "x-hasura-contact-id": userData.contact_id,
     },
     namespace: "https://hasura.io/jwt/claims",
   };
 };
 
-const getUserData = ({ email }) => {
-  const userData = users.find((user) => user.email === email);
+const getContactData = ({ email }) => {
+  const contactData = contacts.find((contact) => contact.email === email);
 
-  return userData;
+  return contactData;
 };
