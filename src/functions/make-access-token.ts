@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 
-import { contacts } from "../data/contacts.js";
+import { getContactData } from "./get-contact-data.js";
+import { getHasuraClaims } from "./get-hasura-claims.js";
 
 const options = {
   algorithm: "RS512",
@@ -24,22 +25,4 @@ export const makeAccessToken = ({ email }) => {
   payload[namespace] = claims;
 
   return jwt.sign(payload, secretOrPrivateKey, options);
-};
-
-const getHasuraClaims = ({ contactData }) => {
-  return {
-    claims: {
-      "x-hasura-allowed-roles": ["admin"],
-      "x-hasura-contact-id": contactData.id,
-      "x-hasura-default-role": "admin",
-      "x-hasura-role": "admin",
-    },
-    namespace: "https://hasura.io/jwt/claims",
-  };
-};
-
-const getContactData = ({ email }) => {
-  const contactData = contacts.find((contact) => contact.email === email);
-
-  return contactData;
 };
